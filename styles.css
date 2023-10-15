@@ -1,0 +1,8 @@
+
+body {
+    background-color: gray;
+}
+
+.path1:hover {
+    stroke: white;
+}
