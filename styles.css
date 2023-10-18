@@ -5,4 +5,5 @@ body {
 
 .path1:hover {
     stroke: white;
+    fill: white;
 }
