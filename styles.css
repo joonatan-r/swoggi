@@ -5,5 +5,7 @@ body {
 
 .path1:hover {
     stroke: white;
+    cursor: pointer;
     fill: white;
+    transition: 0.4s;
 }
