@@ -3,6 +3,7 @@ const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('node:path');
 const getPlayersAndGps = require('./get-players');
 const getGuildPage = require('./guild-page-finder');
+const calculateTeams = require('./calculate-teams');
 
 const createWindow = () => {
     const win = new BrowserWindow({
@@ -16,7 +17,7 @@ const createWindow = () => {
     win.maximize();
     win.show();
     win.loadFile('client/index.html');
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools()
 };
 
 app.whenReady().then(() => {
@@ -55,4 +56,8 @@ ipcMain.handle('get-guild-page', async (event, searchStr) => {
 
 ipcMain.handle('guild-search-stop', () => {
   shouldStop = true;
+});
+
+ipcMain.handle('calculate-teams', (event, nbrOfTeams, minTeamsPerPlayer, maxTeamsPerPlayer, players) => {
+  return calculateTeams(nbrOfTeams, minTeamsPerPlayer, maxTeamsPerPlayer, players);
 });

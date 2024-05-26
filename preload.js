@@ -12,15 +12,15 @@ const { contextBridge, ipcRenderer } = require('electron');
 //     }
 // });
 
-const channels = ["get-players", "get-guild-page", "guild-search-stop"];
+const channels = ["get-players", "get-guild-page", "guild-search-stop", "calculate-teams"];
 const events = ["guild-found", "guild-search-end"];
 const callBacksForEvent = {};
 
 contextBridge.exposeInMainWorld(
     "api", {
-        invoke: (channel, data) => {
+        invoke: (channel, ...data) => {
             if (channels.includes(channel)) {
-                return ipcRenderer.invoke(channel, data);
+                return ipcRenderer.invoke(channel, ...data);
             }
         },
         on: (event, callback, clearOnEnd) => {
