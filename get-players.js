@@ -1,7 +1,7 @@
 
-async function getPlayersAndGps() {
+async function getPlayersAndGps(url) {
     const playersAndGps = []
-    await fetch('https://swgoh.gg/g/EEpS_QXuQ_ich2gMobNTTA/')
+    await fetch(url)
         .then(r => r.text())
         .then(r => {
             for (let i = 0; i < r.length; i++) {
@@ -20,8 +20,10 @@ async function getPlayersAndGps() {
 }
 
 async function find() {
-    const playersAndGps = await getPlayersAndGps()
+    const playersAndGps = await getPlayersAndGps('https://swgoh.gg/g/SF0zGaLuQiCapg85lVPxxw/')
     console.log(playersAndGps)
 }
 
 find()
+
+module.exports = getPlayersAndGps;

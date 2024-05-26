@@ -1,7 +1,9 @@
 
-async function getPage(url) {
+async function getGuildPage(idx, searchStr) {
+    const baseUrl = 'https://swgoh.gg/g/?page='
     let found = false
-    await fetch(url)
+    let info = undefined
+    await fetch(baseUrl + idx)
         .then(r => r.text())
         .then(r => {
             for (let i = 0; i < r.length; i++) {
@@ -13,7 +15,7 @@ async function getPage(url) {
                         const content = r.substring(contentStart, r.indexOf('<', clsEnd))
                         // console.log(content)
     
-                        if (content.toLowerCase().indexOf(process.argv[2]?.toLowerCase()) !== -1) {
+                        if (content.toLowerCase().indexOf(searchStr.toLowerCase()) !== -1) {
                             found = true
     
                             let j = i
@@ -23,25 +25,28 @@ async function getPage(url) {
                             }
                             const refEnd = r.indexOf('"', j + 6)
                             const ref = r.substring(j + 6, refEnd)
-                            console.log(content + ', URL: https://swgoh.gg' + ref)
-                            // console.log(ref)
+                            info = '{ "name": "' + content + '", "url": "' + ref + '" }'
+                            console.log(info)
                             break
                         }
                     }
                 }
             }
         })
-    return found
+    return [found, info]
 }
 
 async function find() {
-    const baseUrl = 'https://swgoh.gg/g/?page='
+    const searchStr = process.argv[2]
     let idx = 1
     let found = false
+    let info = undefined
     
     while (/* !found && */ idx < 420) {
-        found = await getPage(baseUrl + (idx++))
+        [found, info] = await getGuildPage(idx++, searchStr)
     }
 }
 
 find()
+
+module.exports = getGuildPage;
