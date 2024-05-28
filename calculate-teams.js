@@ -6,9 +6,9 @@ function calculateTeams(nbrOfTeams, minTeamsPerPlayer, maxTeamsPerPlayer, player
     const fixedTeamIdxs = [];
     let added = 0;
     const teams = players.map((p, idx) => {
-        if (typeof p.teams !== "undefined") {
+        if (typeof p.fixedTeams !== "undefined") {
             fixedTeamIdxs.push(idx);
-            const fixedTeams = Number(p.teams);
+            const fixedTeams = Number(p.fixedTeams);
             added += fixedTeams;
             return fixedTeams;
         }

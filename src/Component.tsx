@@ -10,13 +10,27 @@ interface Guild {
     fav?: boolean;
 }
 
+interface Player {
+    name: string;
+    gp: string;
+    teams?: number;
+    fixedTeams?: number;
+}
+
+function getAsNumberOrUndefined(value: string) {
+    if (value === "") return undefined;
+    const n = Number(value);
+    if (isNaN(n)) return undefined;
+    return n;
+}
+
 function Component() {
     const [searchStr, setSearchStr] = useState("");
     const [searching, setSearching] = useState(false);
     const [guilds, setGuilds] = useState<Guild[]>([]);
     const [favGuilds, setFavGuilds] = useState<Guild[]>([]);
     const [selectedGuild, setSelectedGuild] = useState<Guild | undefined>();
-    const [players, setPlayers] = useState<{ name: string, gp: string, teams?: number }[]>([]);
+    const [players, setPlayers] = useState<Player[]>([]);
     const minTeams = useRef<any>();
     const maxTeams = useRef<any>();
     const totalTeams = useRef<any>();
@@ -138,9 +152,39 @@ function Component() {
                 </div>
             ))}
             {searching && <p>Searching...</p>}
+            {!!players.length && (
+                <button
+                    onClick={() => {
+                        navigator.clipboard.writeText(
+                            players.map(p => p.name + " = " + (Number(p.teams) || 0)).join(",\n")
+                        );
+                    }}
+                >
+                    Copy
+                </button>
+            )}
             {!!players.length
                 && players.map(p => (
-                    <p>{p.name + " (" + p.gp + ")" + (p.teams ? " = " + p.teams : "")}</p>
+                    <p>
+                        {p.name + " (" + p.gp + ")" + (p.teams ? " = " + p.teams : "")}
+                        <input
+                            type="text"
+                            style={{ marginLeft: 30 }}
+                            onChange={e =>
+                                setPlayers(prevPlayers =>
+                                    prevPlayers.map(prev =>
+                                        (prev === p)
+                                            ? {
+                                                ...p,
+                                                fixedTeams: getAsNumberOrUndefined(e.target.value)
+                                            }
+                                            : prev
+                                    )
+                                )
+                            }
+                            value={p.fixedTeams}
+                        ></input>
+                    </p>
                 )
             )}
             {/* <SvgComponent /> */}
