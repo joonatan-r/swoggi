@@ -26,7 +26,7 @@ async function getGuildPage(idx, searchStr) {
                             const refEnd = r.indexOf('"', j + 6)
                             const ref = r.substring(j + 6, refEnd)
                             info = '{ "name": "' + content + '", "url": "' + ref + '" }'
-                            console.log(info)
+                            // console.log(info)
                             break
                         }
                     }
@@ -36,17 +36,17 @@ async function getGuildPage(idx, searchStr) {
     return [found, info]
 }
 
-async function find() {
-    const searchStr = process.argv[2]
-    let idx = 1
-    let found = false
-    let info = undefined
+// async function find() {
+//     const searchStr = process.argv[2]
+//     let idx = 1
+//     let found = false
+//     let info = undefined
     
-    while (/* !found && */ idx < 420) {
-        [found, info] = await getGuildPage(idx++, searchStr)
-    }
-}
+//     while (/* !found && */ idx < 420) {
+//         [found, info] = await getGuildPage(idx++, searchStr)
+//     }
+// }
 
-find()
+// find()
 
 module.exports = getGuildPage;

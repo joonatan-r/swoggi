@@ -19,11 +19,11 @@ async function getPlayersAndGps(url) {
     return playersAndGps
 }
 
-async function find() {
-    const playersAndGps = await getPlayersAndGps('https://swgoh.gg/g/SF0zGaLuQiCapg85lVPxxw/')
-    console.log(playersAndGps)
-}
+// async function find() {
+//     const playersAndGps = await getPlayersAndGps('https://swgoh.gg/g/SF0zGaLuQiCapg85lVPxxw/')
+//     console.log(playersAndGps)
+// }
 
-find()
+// find()
 
 module.exports = getPlayersAndGps;

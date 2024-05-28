@@ -12,7 +12,15 @@ const { contextBridge, ipcRenderer } = require('electron');
 //     }
 // });
 
-const channels = ["get-players", "get-guild-page", "guild-search-stop", "calculate-teams"];
+const channels =
+    [
+        "get-players",
+        "get-guild-page",
+        "guild-search-stop",
+        "calculate-teams",
+        "get-config",
+        "write-config"
+    ];
 const events = ["guild-found", "guild-search-end"];
 const callBacksForEvent = {};
 
