@@ -182,7 +182,7 @@ function Component() {
                                     )
                                 )
                             }
-                            value={p.fixedTeams}
+                            value={(typeof p.fixedTeams === "undefined") ? "" : p.fixedTeams}
                         ></input>
                     </p>
                 )
