@@ -19,7 +19,7 @@ const createWindow = () => {
     win.maximize();
     win.show();
     win.loadFile('client/index.html');
-    win.webContents.openDevTools()
+    // win.webContents.openDevTools();
 };
 
 app.whenReady().then(() => {

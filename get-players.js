@@ -1,20 +1,32 @@
 
+const { findWithOpts } = require('./util');
+
 async function getPlayersAndGps(url) {
     const playersAndGps = []
     await fetch(url)
         .then(r => r.text())
         .then(r => {
-            for (let i = 0; i < r.length; i++) {
-                if (r.substring(i, i + 13) === '<div><strong>') {
-                    const valueEnd = r.indexOf('</', i + 13)
-                    const content = r.substring(i + 13, valueEnd)
-                    const nextTdStart = r.indexOf('<td', i + 13)
-                    const nextTdContentStart = r.indexOf('>', nextTdStart) + 1
-                    const gp = r.substring(nextTdContentStart, r.indexOf('<', nextTdContentStart))
-                    // console.log(content + ' / ' + gp)
-                    playersAndGps.push({ name: content, gp: gp })
-                }
-            }
+            const firstStart = findWithOpts(r, {
+                startIdx: 0,
+                matchStart: "</thead>",
+                matchEnd: "",
+                all: false
+            })
+            const playerResults = findWithOpts(r, {
+                startIdx: firstStart.idx,
+                matchStart: "class=\"fw-bold text-white\">\n",
+                matchEnd: "\n",
+                all: true,
+            })
+            playerResults.forEach(p => {
+                const gp = findWithOpts(r, {
+                    startIdx: p.idx,
+                    matchStart: "<td>\n",
+                    matchEnd: "</td>",
+                    all: false,
+                }).result.replace(/,/g, "").trim();
+                playersAndGps.push({ name: p.result, gp: gp })
+            })
         })
     return playersAndGps
 }
