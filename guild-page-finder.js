@@ -37,6 +37,7 @@ async function getGuildPage(idx, searchStr) {
     
 //     while (/* !found && */ idx < 420) {
 //         [found, info] = await getGuildPage(idx++, searchStr)
+//         if (found) console.log(info)
 //     }
 // }
 

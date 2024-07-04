@@ -33,15 +33,21 @@ function GuildTable(
     }
 ) {
     const { allGuilds, favGuilds, setFavGuilds, setSelectedGuild } = props;
+    const isLastFav = (g: Guild) => {
+        return !!favGuilds.length && favGuilds.indexOf(g) === favGuilds.length - 1;
+    };
+    const isFirstNonFav = (g: Guild) => {
+        return !g.fav && allGuilds[allGuilds.indexOf(g) - 1]?.fav;
+    };
     return (
         <table>
             <tbody>
                 {allGuilds.map(g => (
                     <tr
-                        style={
-                            (!!favGuilds.length && favGuilds.indexOf(g) === favGuilds.length - 1)
-                                ? { borderBottom: "1px solid black", paddingBottom: 10 }
-                                : {}
+                        className={
+                            isLastFav(g)
+                                ? "last-fav-guild"
+                                : isFirstNonFav(g) ? "first-non-fav-guild" : ""
                         }
                     >
                         <td>{g.name}</td>
@@ -90,7 +96,7 @@ function PlayerTable(props: { players: Player[]; setPlayers: (arg: any) => void 
                         <td>
                         <input
                             type="text"
-                            size={6}
+                            size={4}
                             onChange={e =>
                                 props.setPlayers((prevPlayers: Player[]) =>
                                     prevPlayers.map(prev =>
@@ -205,13 +211,6 @@ function Component() {
                     </button>
                 </div>
             )}
-            <GuildTable
-                allGuilds={allGuilds}
-                favGuilds={favGuilds}
-                setFavGuilds={setFavGuilds}
-                setSelectedGuild={setSelectedGuild}
-            />
-            {searching && <p>Searching...</p>}
             {!!players.length && (
                 <button
                     onClick={() => {
@@ -223,6 +222,14 @@ function Component() {
                     Copy
                 </button>
             )}
+            <div style={{ padding: 12 }}></div>
+            <GuildTable
+                allGuilds={allGuilds}
+                favGuilds={favGuilds}
+                setFavGuilds={setFavGuilds}
+                setSelectedGuild={setSelectedGuild}
+            />
+            {searching && <p>Searching...</p>}
             {!!players.length &&
                 <PlayerTable players={players} setPlayers={setPlayers} />
             }

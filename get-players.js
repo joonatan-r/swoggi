@@ -1,5 +1,5 @@
 
-const { findWithOpts } = require('./util');
+const { findWithOpts, findWithOptsReverse } = require('./util');
 
 async function getPlayersAndGps(url) {
     const playersAndGps = []
@@ -15,7 +15,7 @@ async function getPlayersAndGps(url) {
             const playerResults = findWithOpts(r, {
                 startIdx: firstStart.idx,
                 matchStart: "class=\"fw-bold text-white\">\n",
-                matchEnd: "\n",
+                matchEnd: "\n</div>",
                 all: true,
             })
             playerResults.forEach(p => {
@@ -25,7 +25,25 @@ async function getPlayersAndGps(url) {
                     matchEnd: "</td>",
                     all: false,
                 }).result.replace(/,/g, "").trim();
-                playersAndGps.push({ name: p.result, gp: gp })
+
+                // handle cases that have nested html instead of name directly
+                const innerHtml = findWithOpts(p.result, {
+                    startIdx: 0,
+                    matchStart: "\n</",
+                    matchEnd: "",
+                    all: false,
+                });
+                let name = p.result;
+
+                if (innerHtml?.idx) {
+                    name = findWithOptsReverse(p.result, {
+                        startIdx: innerHtml?.idx,
+                        matchStart: "\">",
+                        matchEnd: "\n",
+                        all: false,
+                    })?.result?.trim() || name;
+                }
+                playersAndGps.push({ name, gp: gp })
             })
         })
     return playersAndGps
