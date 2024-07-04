@@ -9,3 +9,7 @@ body {
     fill: white;
     transition: 0.4s;
 }
+
+td {
+    padding: 8px;
+}

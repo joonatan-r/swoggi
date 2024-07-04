@@ -24,6 +24,95 @@ function getAsNumberOrUndefined(value: string) {
     return n;
 }
 
+function GuildTable(
+    props: {
+        allGuilds: Guild[];
+        favGuilds: Guild[];
+        setFavGuilds: (arg: any) => void;
+        setSelectedGuild: (arg: any) => void;
+    }
+) {
+    const { allGuilds, favGuilds, setFavGuilds, setSelectedGuild } = props;
+    return (
+        <table>
+            <tbody>
+                {allGuilds.map(g => (
+                    <tr
+                        style={
+                            (!!favGuilds.length && favGuilds.indexOf(g) === favGuilds.length - 1)
+                                ? { borderBottom: "1px solid black", paddingBottom: 10 }
+                                : {}
+                        }
+                    >
+                        <td>{g.name}</td>
+                        <td>
+                            <button
+                                style={{ marginLeft: 30 }}
+                                onClick={() => {
+                                    api.invoke("guild-search-stop");
+                                    setSelectedGuild(g);
+                                }}
+                            >
+                                Select
+                            </button>
+                        </td>
+                        <td>
+                            <button
+                                style={{ marginLeft: 10 }}
+                                onClick={() => {
+                                    const newFavGuilds =
+                                        (g.fav)
+                                            ? favGuilds.filter(fg => fg.url !== g.url)
+                                            : favGuilds.concat({ ...g, fav: true });
+                                    api.invoke("write-config", { favorites: newFavGuilds });
+                                    setFavGuilds(newFavGuilds);
+                                }}
+                            >
+                                {g.fav ? "Unfavorite" : "Favorite"}
+                            </button>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
+function PlayerTable(props: { players: Player[]; setPlayers: (arg: any) => void }) {
+    return (
+        <table>
+            <tbody>
+                {props.players.map(p => (
+                    <tr>
+                        <td>{p.name}</td>
+                        <td>{p.gp}</td>
+                        <td>{(typeof p.teams !== "undefined") ? p.teams : ""}</td>
+                        <td>
+                        <input
+                            type="text"
+                            size={6}
+                            onChange={e =>
+                                props.setPlayers((prevPlayers: Player[]) =>
+                                    prevPlayers.map(prev =>
+                                        (prev === p)
+                                            ? {
+                                                ...p,
+                                                fixedTeams: getAsNumberOrUndefined(e.target.value)
+                                            }
+                                            : prev
+                                    )
+                                )
+                            }
+                            value={(typeof p.fixedTeams === "undefined") ? "" : p.fixedTeams}
+                        ></input>
+                        </td>
+                    </tr>
+                ))}
+            </tbody>
+        </table>
+    );
+}
+
 function Component() {
     const [searchStr, setSearchStr] = useState("");
     const [searching, setSearching] = useState(false);
@@ -116,41 +205,12 @@ function Component() {
                     </button>
                 </div>
             )}
-            {allGuilds.map(g => (
-                <div key={g.url + g.fav}>
-                    <p
-                        style={
-                            (!!favGuilds.length && favGuilds.indexOf(g) === favGuilds.length - 1)
-                                ? { borderBottom: "1px solid black", paddingBottom: 10 }
-                                : {}
-                        }
-                    >
-                        {g.name}
-                        <button
-                            style={{ marginLeft: 30 }}
-                            onClick={() => {
-                                api.invoke("guild-search-stop");
-                                setSelectedGuild(g);
-                            }}
-                        >
-                            Select
-                        </button>
-                        <button
-                            style={{ marginLeft: 10 }}
-                            onClick={() => {
-                                const newFavGuilds =
-                                    (g.fav)
-                                        ? favGuilds.filter(fg => fg.url !== g.url)
-                                        : favGuilds.concat({ ...g, fav: true });
-                                api.invoke("write-config", { favorites: newFavGuilds });
-                                setFavGuilds(newFavGuilds);
-                            }}
-                        >
-                            {g.fav ? "Unfavorite" : "Favorite"}
-                        </button>
-                    </p>
-                </div>
-            ))}
+            <GuildTable
+                allGuilds={allGuilds}
+                favGuilds={favGuilds}
+                setFavGuilds={setFavGuilds}
+                setSelectedGuild={setSelectedGuild}
+            />
             {searching && <p>Searching...</p>}
             {!!players.length && (
                 <button
@@ -163,30 +223,9 @@ function Component() {
                     Copy
                 </button>
             )}
-            {!!players.length
-                && players.map(p => (
-                    <p>
-                        {p.name + " (" + p.gp + ")" + (p.teams ? " = " + p.teams : "")}
-                        <input
-                            type="text"
-                            style={{ marginLeft: 30 }}
-                            onChange={e =>
-                                setPlayers(prevPlayers =>
-                                    prevPlayers.map(prev =>
-                                        (prev === p)
-                                            ? {
-                                                ...p,
-                                                fixedTeams: getAsNumberOrUndefined(e.target.value)
-                                            }
-                                            : prev
-                                    )
-                                )
-                            }
-                            value={(typeof p.fixedTeams === "undefined") ? "" : p.fixedTeams}
-                        ></input>
-                    </p>
-                )
-            )}
+            {!!players.length &&
+                <PlayerTable players={players} setPlayers={setPlayers} />
+            }
             {/* <SvgComponent /> */}
         </>
     );
